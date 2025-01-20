@@ -1,38 +1,28 @@
-const input1 = document.getElementById('num1') as HTMLInputElement;
-const input2 = document.getElementById('num2') as HTMLInputElement;
-const buttonSoma = document.getElementById('buttonSomar') as HTMLInputElement;
-const buttonSubtrair = document.getElementById('buttonSubtrair') as HTMLInputElement;
+let listElement = document.querySelector('#app ul') as HTMLUListElement;
+let inputElement = document.querySelector('#app input') as HTMLInputElement;
+let buttonElement = document.querySelector('#app button') as HTMLElement;
 
-type Operacoes = "SOMAR" | "SUBTRAIR"
+let tarefas : string[] = [];
 
-interface Valores{
-    tipo : Operacoes;
-    a : number;
-    b : number;
-}
-
-function operacao({tipo,a,b}: Valores) {
-    if(tipo === "SOMAR") {
-        return a+b;
+function adicionarTarefa() : boolean | void{
+    if(inputElement.value === ""){
+        alert("Digite alguma tarefa");
+        return false;
     } else {
-        return a-b;
+
+        let tarefaDigitada : string = inputElement.value;
+        tarefas.push(tarefaDigitada);
+
+        inputElement.value = "";
+
+        salvarDados();
+        
+
     }
 }
 
-buttonSoma.addEventListener('click', () => {
-    const resultado = operacao({
-        tipo : "SOMAR",
-        a: Number(input1.value),
-        b: Number(input2.value),
-    });
-    console.log(resultado);
-})
+buttonElement.onclick = adicionarTarefa;
 
-buttonSubtrair.addEventListener('click', () => {
-    const resultado = operacao({
-        tipo : "SUBTRAIR",
-        a: Number(input1.value),
-        b: Number(input2.value),
-    });
-    console.log(resultado);
-})
+function salvarDados(){
+    localStorage.setItem("@listagem_tarefas",JSON.stringify(tarefas));
+}
