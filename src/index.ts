@@ -1,28 +1,53 @@
-let listElement = document.querySelector('#app ul') as HTMLUListElement;
-let inputElement = document.querySelector('#app input') as HTMLInputElement;
-let buttonElement = document.querySelector('#app button') as HTMLElement;
+const listElement = document.querySelector('#app ul') as HTMLUListElement;
+const inputElement = document.querySelector('#app input') as HTMLInputElement;
+const buttonElement = document.querySelector('#app button') as HTMLElement;
 
-let tarefas : string[] = [];
+const listaSalva: string | null = localStorage.getItem('@listagem_tarefas');
+let tarefas: string[] = listaSalva ? JSON.parse(listaSalva) : [];
 
-function adicionarTarefa() : boolean | void{
-    if(inputElement.value === ""){
-        alert("Digite alguma tarefa");
-        return false;
-    } else {
+function listarTarefas(): void {
+    listElement.innerHTML = '';
 
-        let tarefaDigitada : string = inputElement.value;
-        tarefas.push(tarefaDigitada);
+    tarefas.forEach((tarefa, index) => {
+        const todoElement = document.createElement('li');
+        const tarefaText = document.createTextNode(tarefa);
 
-        inputElement.value = "";
+        const linkElement = document.createElement('a');
+        linkElement.href = '#';
+        linkElement.textContent = 'Excluir';
+        linkElement.style.marginLeft = "20px";
+        linkElement.addEventListener('click', () => deletarTarefa(index));
 
-        salvarDados();
-        
+        todoElement.appendChild(tarefaText);
+        todoElement.appendChild(linkElement);
+        listElement.appendChild(todoElement);
+    });
+}
 
+function adicionarTarefa(): void {
+    const tarefaDigitada = inputElement.value.trim();
+
+    if (!tarefaDigitada) {
+        alert('Digite alguma tarefa');
+        return;
     }
+
+    tarefas.push(tarefaDigitada);
+    inputElement.value = '';
+
+    listarTarefas();
+    salvarDados();
 }
 
-buttonElement.onclick = adicionarTarefa;
-
-function salvarDados(){
-    localStorage.setItem("@listagem_tarefas",JSON.stringify(tarefas));
+function deletarTarefa(index: number): void {
+    tarefas.splice(index, 1);
+    listarTarefas();
+    salvarDados();
 }
+
+function salvarDados(): void {
+    localStorage.setItem('@listagem_tarefas', JSON.stringify(tarefas));
+}
+
+buttonElement.addEventListener('click', adicionarTarefa);
+listarTarefas();
